@@ -9,8 +9,8 @@ from app.schemas.building import Building
 
 class OrganizationCreate(BaseModel):
     name: Annotated[str, Field(..., min_length=5, max_length=155)]
-    phone_numbers: Annotated[list[str], Field(..., min_length=1)]
-    building_id: Annotated[int, Field(..., ge=1)]
+    phones: Annotated[list[str], Field(...)]
+    building_id: Annotated[int, Field(..., ge=1, le=15)]
     activity_ids: Annotated[list[int], Field(..., min_length=1)]
 
     @field_validator("phone_numbers")
@@ -25,7 +25,7 @@ class OrganizationCreate(BaseModel):
 class Organization(BaseModel):
     id: Annotated[int, Field(...)]
     name: str
-    phone_numbers: list[str]
+    phones: list[str]
     building: Building
     activities: list[Acivity]
 
