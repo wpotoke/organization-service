@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import (
     Building as BuildingModel,
 )
-from app.schemas.building import BuildingCreate
+from app.schemas import BuildingCreate
 
 
 class BuildingRepository:
