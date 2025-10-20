@@ -14,5 +14,6 @@ class Building(BaseModel):
     address: str
     latitude: float
     longitude: float
+    is_active: Annotated[bool, Field(default=True)]
 
     model_config = ConfigDict(from_attributes=True)

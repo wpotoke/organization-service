@@ -28,5 +28,6 @@ class Organization(BaseModel):
     phones: list[str]
     building: Building
     activities: list[Acivity]
+    is_active: Annotated[bool, Field(default=True)]
 
     model_config = ConfigDict(from_attributes=True)

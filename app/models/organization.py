@@ -1,5 +1,5 @@
 # ruff:noqa:F821
-from sqlalchemy import ForeignKey, Integer, String
+from sqlalchemy import Boolean, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -12,6 +12,7 @@ class Organization(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(155), nullable=False)
     phones: Mapped[list["Phone"]] = relationship("Phone", back_populates="organization")
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     building_id: Mapped[int] = mapped_column(Integer, ForeignKey("buildings.id"), nullable=False)
     building: Mapped["Building"] = relationship("Building", back_populates="organizations")
     activities: Mapped[list["Activity"]] = relationship(

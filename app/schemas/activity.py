@@ -12,6 +12,7 @@ class Acivity(BaseModel):
     id: Annotated[int, Field(...)]
     name: str
     parent_id: int | None = None
+    is_active: Annotated[bool, Field(default=True)]
     level: int = Field(..., ge=1, le=3)
 
     model_config = ConfigDict(from_attributes=True)
