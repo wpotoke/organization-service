@@ -15,7 +15,7 @@ router = APIRouter(prefix="/building", tags=["building"])
 async def get_buildings(
     building_service: Annotated[BuildingService, Depends(get_building_service)],
 ) -> list[Building]:
-    return building_service.get_all_buildings()
+    return await building_service.get_all_buildings()
 
 
 @router.get("/{building_id}", response_model=Optional[Building], status_code=status.HTTP_200_OK)
@@ -24,7 +24,7 @@ async def get_building(
     building_service: Annotated[BuildingService, Depends(get_building_service)],
 ) -> Building | None:
     try:
-        return building_service.get_building(building_id)
+        return await building_service.get_building(building_id)
     except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail) from e
 
@@ -35,7 +35,7 @@ async def create_building(
     building_service: Annotated[BuildingService, Depends(get_building_service)],
 ) -> Building | None:
     try:
-        return building_service.create_building(building_create)
+        return await building_service.create_building(building_create)
     except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail) from e
 
@@ -47,7 +47,7 @@ async def update_building(
     building_service: Annotated[BuildingService, Depends(get_building_service)],
 ) -> Building | None:
     try:
-        return building_service.update_building(building_id, building_update)
+        return await building_service.update_building(building_id, building_update)
     except (BusinessException, NotFoundException) as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail) from e
 
@@ -58,7 +58,7 @@ async def delete_building(
     building_service: Annotated[BuildingService, Depends(get_building_service)],
 ) -> Building | None:
     try:
-        res = building_service.delete_building(building_id)
+        res = await building_service.delete_building(building_id)
     except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail) from e
     if res:

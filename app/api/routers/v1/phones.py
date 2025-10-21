@@ -15,7 +15,7 @@ router = APIRouter(prefix="/phone", tags=["phone"])
 async def get_phones(
     phone_service: Annotated[PhoneService, Depends(get_phone_service)],
 ) -> list[Phone]:
-    return phone_service.get_all_phones()
+    return await phone_service.get_all_phones()
 
 
 @router.get("/{phone_id}", response_model=Optional[Phone], status_code=status.HTTP_200_OK)
@@ -24,7 +24,7 @@ async def get_phone(
     phone_service: Annotated[PhoneService, Depends(get_phone_service)],
 ) -> Phone | None:
     try:
-        return phone_service.get_phone(phone_id)
+        return await phone_service.get_phone(phone_id)
     except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail) from e
 
@@ -35,7 +35,7 @@ async def create_phone(
     phone_service: Annotated[PhoneService, Depends(get_phone_service)],
 ) -> Phone | None:
     try:
-        return phone_service.create_phone(phone_create)
+        return await phone_service.create_phone(phone_create)
     except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail) from e
 
@@ -47,7 +47,7 @@ async def update_phone(
     phone_service: Annotated[PhoneService, Depends(get_phone_service)],
 ) -> Phone | None:
     try:
-        return phone_service.update_phone(phone_id, phone_update)
+        return await phone_service.update_phone(phone_id, phone_update)
     except (BusinessException, NotFoundException) as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail) from e
 
@@ -58,7 +58,7 @@ async def delete_phone(
     phone_service: Annotated[PhoneService, Depends(get_phone_service)],
 ) -> Phone | None:
     try:
-        res = phone_service.delete_phone(phone_id)
+        res = await phone_service.delete_phone(phone_id)
     except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail) from e
     if res:

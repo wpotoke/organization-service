@@ -15,7 +15,7 @@ router = APIRouter(prefix="/activity", tags=["activity"])
 async def get_activities(
     activity_service: Annotated[ActivityService, Depends(get_activity_service)],
 ) -> list[Acivity]:
-    return activity_service.get_all_activities()
+    return await activity_service.get_all_activities()
 
 
 @router.get("/{activity_id}", response_model=Optional[Acivity], status_code=status.HTTP_200_OK)
@@ -23,7 +23,7 @@ async def get_activity(
     activity_id: Annotated[int, Path(ge=1)],
     activity_service: Annotated[ActivityService, Depends(get_activity_service)],
 ) -> Acivity | None:
-    return activity_service.get_activity(activity_id)
+    return await activity_service.get_activity(activity_id)
 
 
 @router.post("/", response_model=Optional[Acivity], status_code=status.HTTP_201_CREATED)
@@ -32,7 +32,7 @@ async def create_activity(
     activity_service: Annotated[ActivityService, Depends(get_activity_service)],
 ) -> Acivity | None:
     try:
-        return activity_service.create_activity(activity_create)
+        return await activity_service.create_activity(activity_create)
     except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail) from e
 
@@ -44,7 +44,7 @@ async def update_activity(
     activity_service: Annotated[ActivityService, Depends(get_activity_service)],
 ) -> Acivity | None:
     try:
-        return activity_service.update_activity(activity_id, activity_update)
+        return await activity_service.update_activity(activity_id, activity_update)
     except (BusinessException, NotFoundException) as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail) from e
 
@@ -55,7 +55,7 @@ async def delete_activity(
     activity_service: Annotated[ActivityService, Depends(get_activity_service)],
 ) -> Acivity | None:
     try:
-        res = activity_service.delete_activity(activity_id)
+        res = await activity_service.delete_activity(activity_id)
     except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail) from e
     if res:

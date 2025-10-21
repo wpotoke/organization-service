@@ -39,6 +39,10 @@ class OrganizationService:
         activity = await self.activity_repo.get_by_id(activity_id)
         if not activity:
             raise NotFoundException(f"Organization with activity id {activity_id} not found")
+        organization = await self.organization_repo.get_by_activity(activity_id)
+        if not organization:
+            raise NotFoundException(401, f"Organization with activity id {activity_id} not found")
+        return organization
 
     async def get_organization_by_rectangle(
         self,
