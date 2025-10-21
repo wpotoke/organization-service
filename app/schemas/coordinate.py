@@ -13,4 +13,4 @@ class CoordinateRectangle(BaseModel):
 class CoordinateRadius(BaseModel):
     lat: Annotated[float, Field(..., ge=-90.0, le=90.0, examples=[55.7558])]
     lon: Annotated[float, Field(..., ge=-90.0, le=90.0, examples=[-36.2358])]
-    radius_rm: Annotated[float, Field(..., ge=1, le=6371)]
+    radius_km: Annotated[float | int, Field(..., ge=1, le=6371)]
