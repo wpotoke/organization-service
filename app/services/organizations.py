@@ -20,6 +20,9 @@ class OrganizationService:
         self.building_repo = building_repo
         self.activity_repo = activity_repo
 
+    async def get_all_organizations(self) -> list[OrganizationModel]:
+        return await self.organization_repo.get_all()
+
     async def get_organization_by_id(self, organization_id: int) -> OrganizationModel | None:
         return await self.organization_repo.get_by_id(organization_id)
 

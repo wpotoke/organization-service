@@ -20,6 +20,13 @@ class OrganizationRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
+    async def get_all(self):
+        result = await self.db.scalars(
+            select(OrganizationModel).where(OrganizationModel.is_active == True).options(*self.COMMON_OPTIONS)
+        )
+        organizations = result.all()
+        return organizations
+
     async def get_by_building(self, building_id: int) -> list[OrganizationModel]:
         result = await self.db.scalars(
             select(OrganizationModel)
