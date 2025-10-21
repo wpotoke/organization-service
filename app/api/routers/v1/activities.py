@@ -15,6 +15,16 @@ router = APIRouter(prefix="/activity", tags=["activity"])
 async def get_activities(
     activity_service: Annotated[ActivityService, Depends(get_activity_service)],
 ) -> list[Acivity]:
+    """Получает все деятельности
+
+    Args:
+        activity_service (Annotated[ActivityService, Depends):
+            Получает сервис в котором реализованна бизнес логика
+
+    Returns:
+        list[Acivity]:
+            Список pydantic схем
+    """
     return await activity_service.get_all_activities()
 
 
@@ -23,7 +33,10 @@ async def get_activity(
     activity_id: Annotated[int, Path(ge=1)],
     activity_service: Annotated[ActivityService, Depends(get_activity_service)],
 ) -> Acivity | None:
-    return await activity_service.get_activity(activity_id)
+    try:
+        return await activity_service.get_activity(activity_id)
+    except NotFoundException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail) from e
 
 
 @router.post("/", response_model=Optional[Acivity], status_code=status.HTTP_201_CREATED)
