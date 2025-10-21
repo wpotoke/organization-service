@@ -122,12 +122,8 @@ class OrganizationRepository:
         organization = result.first()
         return organization
 
-    async def get_by_name_activity(self, name: str) -> list[OrganizationModel]:
-        result = await self.db.scalars(select(ActivityModel).where(ActivityModel.name == name))
-        activity = result.first()
-        if not activity:
-            return []
-
+    async def get_by_name_activity_with_children(self, name: str) -> list[OrganizationModel]:
+        activity = self.get_by_name(name)
         cte = (
             select(ActivityModel)
             .where(ActivityModel.id == activity.id, ActivityModel.is_active == True)

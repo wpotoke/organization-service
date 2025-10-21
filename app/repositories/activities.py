@@ -22,6 +22,12 @@ class ActivityRepository:
         )
         return result.first()
 
+    async def get_by_name(self, name: str) -> ActivityModel | None:
+        result = await self.db.scalars(
+            select(ActivityModel).where(ActivityModel.name == name, ActivityModel.is_active == True)
+        )
+        return result.first()
+
     async def create(self, activity_create: ActivityCreate) -> ActivityModel:
         activity_db = ActivityModel(**activity_create.model_dump())
         self.db.add(activity_db)

@@ -1,12 +1,12 @@
 # ruff:noqa:E712
-from app.core import NotFoundException
+from app.core import BusinessException, NotFoundException
 from app.models import Organization as OrganizationModel
 from app.repositories import (
     ActivityRepository,
     BuildingRepository,
     OrganizationRepository,
 )
-from app.schemas import OrganizationCreate
+from app.schemas import CoordinateRadius, CoordinateRectangle, OrganizationCreate
 
 
 class OrganizationService:
@@ -44,19 +44,19 @@ class OrganizationService:
             raise NotFoundException(401, f"Organization with activity id {activity_id} not found")
         return organization
 
-    async def get_organization_by_rectangle(
-        self,
-        lat_min: float,
-        lat_max: float,
-        lon_min: float,
-        lon_max: float,
-    ) -> list[OrganizationModel]:
-        return await self.organization_repo.get_by_rectangle(
-            lat_min=lat_min, lat_max=lat_max, lon_min=lon_min, lon_max=lon_max
-        )
+    async def get_organizations_by_name_activity_with_children(self, name: str) -> list[OrganizationModel]:
+        activity = await self.activity_repo.get_by_name(name)
+        if not activity:
+            raise NotFoundException(f"Organization with activity name {name} not found")
+        return await self.organization_repo.get_by_name_activity_with_children(name)
 
-    async def get_organizations_by_name_activity(self, name: str) -> list[OrganizationModel]:
-        return await self.organization_repo.get_by_name_activity(name)
+    async def get_organization_by_rectangle(
+        self, coordinates: CoordinateRectangle
+    ) -> list[OrganizationModel]:
+        return await self.organization_repo.get_by_rectangle(**coordinates.model_dump())
+
+    async def get_organization_by_radius(self, coordinates: CoordinateRadius) -> list[OrganizationModel]:
+        return await self.organization_repo.get_by_radius(**coordinates.model_dump())
 
     async def create_organization(self, organization_create: OrganizationCreate):
         building = await self.building_repo.get_by_id(organization_create.building_id)
@@ -79,10 +79,12 @@ class OrganizationService:
                 status_code=401,
                 detail=f"Organization with building id {organization_update.building_id} not found",
             )
-        return await self.organization_repo.update(organization_update)
+        organization_db = await self.organization_repo.update(organization_update)
+        if not organization_db:
+            raise BusinessException(detail=f"Failed to update activity with id {organization_id}")
 
     async def delete_organization(self, organization_id: int) -> bool:
         organization = await self.organization_repo.get_by_id(organization_id)
         if not organization:
             raise NotFoundException(f"Organization with id {organization_id} not found")
-        return await self.organization_repo.delete(organization_id)
+        await self.organization_repo.delete(organization_id)
