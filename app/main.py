@@ -15,8 +15,6 @@ app.include_router(activity_router)
 app.include_router(orginazation_router)
 
 
-app.get("/")
-
-
+@app.get("/")
 async def greet():
     return {"Reponse": "Hello this organization app, add /docs to you url for view docs"}
