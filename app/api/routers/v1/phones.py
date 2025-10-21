@@ -23,7 +23,10 @@ async def get_phone(
     phone_id: Annotated[int, Path(ge=1)],
     phone_service: Annotated[PhoneService, Depends(get_phone_service)],
 ) -> Phone | None:
-    return phone_service.get_phone(phone_id)
+    try:
+        return phone_service.get_phone(phone_id)
+    except NotFoundException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail) from e
 
 
 @router.post("/", response_model=Optional[Phone], status_code=status.HTTP_201_CREATED)

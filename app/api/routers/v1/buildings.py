@@ -12,22 +12,25 @@ router = APIRouter(prefix="/building", tags=["building"])
 
 
 @router.get("/", response_model=list[Building], status_code=status.HTTP_200_OK)
-async def get_phones(
+async def get_buildings(
     building_service: Annotated[BuildingService, Depends(get_building_service)],
 ) -> list[Building]:
     return building_service.get_all_buildings()
 
 
 @router.get("/{building_id}", response_model=Optional[Building], status_code=status.HTTP_200_OK)
-async def get_phone(
+async def get_building(
     building_id: Annotated[int, Path(ge=1)],
     building_service: Annotated[BuildingService, Depends(get_building_service)],
 ) -> Building | None:
-    return building_service.get_building(building_id)
+    try:
+        return building_service.get_building(building_id)
+    except NotFoundException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail) from e
 
 
 @router.post("/", response_model=Optional[Building], status_code=status.HTTP_201_CREATED)
-async def create_phone(
+async def create_building(
     building_create: Annotated[BuildingCreate, Field(description="Building create data")],
     building_service: Annotated[BuildingService, Depends(get_building_service)],
 ) -> Building | None:
@@ -38,7 +41,7 @@ async def create_phone(
 
 
 @router.put("/{building_id}", response_model=Optional[Building], status_code=status.HTTP_200_OK)
-async def update_phone(
+async def update_building(
     building_id: Annotated[int, Path(ge=1)],
     building_update: Annotated[BuildingCreate, Field(description="Building create data")],
     building_service: Annotated[BuildingService, Depends(get_building_service)],
@@ -50,7 +53,7 @@ async def update_phone(
 
 
 @router.delete("/{building_id}", status_code=status.HTTP_200_OK)
-async def delete_phone(
+async def delete_building(
     building_id: Annotated[int, Path(ge=1)],
     building_service: Annotated[BuildingService, Depends(get_building_service)],
 ) -> Building | None:
@@ -59,5 +62,5 @@ async def delete_phone(
     except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail) from e
     if res:
-        return {"success": "Phone success deleted"}
-    return {"success": "Phone not exists"}
+        return {"success": "Building success deleted"}
+    return {"success": "Building not exists"}
