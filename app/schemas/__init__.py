@@ -1,5 +1,6 @@
 from app.schemas.activity import Acivity, ActivityCreate
 from app.schemas.building import Building, BuildingCreate
+from app.schemas.coordinate import CoordinateRadius, CoordinateRectangle
 from app.schemas.organization import Organization, OrganizationCreate
 from app.schemas.phone import Phone, PhoneCreate
 
@@ -12,4 +13,6 @@ __all__ = [
     "OrganizationCreate",
     "Phone",
     "PhoneCreate",
+    "CoordinateRadius",
+    "CoordinateRectangle",
 ]
