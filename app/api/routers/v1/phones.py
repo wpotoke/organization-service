@@ -43,7 +43,7 @@ async def create_phone(
 @router.put("/{phone_id}", response_model=Optional[Phone], status_code=status.HTTP_200_OK)
 async def update_phone(
     phone_id: Annotated[int, Path(ge=1)],
-    phone_update: Annotated[PhoneCreate, Field(description="Phone create data")],
+    phone_update: Annotated[PhoneCreate, Field(description="Phone update data")],
     phone_service: Annotated[PhoneService, Depends(get_phone_service)],
 ) -> Phone | None:
     try:

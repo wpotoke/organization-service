@@ -43,7 +43,7 @@ async def create_building(
 @router.put("/{building_id}", response_model=Optional[Building], status_code=status.HTTP_200_OK)
 async def update_building(
     building_id: Annotated[int, Path(ge=1)],
-    building_update: Annotated[BuildingCreate, Field(description="Building create data")],
+    building_update: Annotated[BuildingCreate, Field(description="Building update data")],
     building_service: Annotated[BuildingService, Depends(get_building_service)],
 ) -> Building | None:
     try:
