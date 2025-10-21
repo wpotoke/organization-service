@@ -1,3 +1,4 @@
+# ruff:noqa:E712
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,11 +13,13 @@ class BuildingRepository:
         self.db = db
 
     async def get_all(self) -> list[BuildingModel]:
-        result = await self.db.scalars(select(BuildingModel))
+        result = await self.db.scalars(select(BuildingModel).where(BuildingModel.is_active == True))
         return result.all()
 
     async def get_by_id(self, building_id: int) -> BuildingModel | None:
-        result = await self.db.scalars(select(BuildingModel).where(BuildingModel.id == building_id))
+        result = await self.db.scalars(
+            select(BuildingModel).where(BuildingModel.id == building_id, BuildingModel.is_active == True)
+        )
         return result.first()
 
     async def create(self, bulding_create: BuildingCreate) -> BuildingModel:
@@ -38,7 +41,7 @@ class BuildingRepository:
         return None
 
     async def delete(self, building_id: int) -> bool:
-        result = self.db.execute(
+        result = await self.db.execute(
             update(BuildingModel).where(BuildingModel.id == building_id).values(is_active=False)
         )
         await self.db.commit()

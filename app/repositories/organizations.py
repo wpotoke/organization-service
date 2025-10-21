@@ -1,3 +1,4 @@
+# ruff:noqa:E712
 from sqlalchemy import select, text, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload, selectinload
@@ -22,7 +23,10 @@ class OrganizationRepository:
     async def get_by_building(self, building_id: int) -> list[OrganizationModel]:
         result = await self.db.scalars(
             select(OrganizationModel)
-            .where(OrganizationModel.building_id == building_id)
+            .where(
+                OrganizationModel.building_id == building_id,
+                OrganizationModel.is_active == True,
+            )
             .options(*self.COMMON_OPTIONS)
         )
         organizations = result.all()
@@ -36,7 +40,11 @@ class OrganizationRepository:
                 OrganizationModel.id == organization_activities.c.organization_id,
             )
             .join(ActivityModel, organization_activities.c.activity_id == ActivityModel.id)
-            .where(ActivityModel.id == activity_id)
+            .where(
+                ActivityModel.id == activity_id,
+                OrganizationModel.is_active == True,
+                ActivityModel.is_active == True,
+            )
             .options(*self.COMMON_OPTIONS)
         )
         organizations = result.all()
@@ -48,6 +56,8 @@ class OrganizationRepository:
             select(OrganizationModel)
             .join(BuildingModel)
             .where(
+                OrganizationModel.is_active == True,
+                BuildingModel.is_active == True,
                 text(
                     f"""
                     6371 * acos(
@@ -56,7 +66,7 @@ class OrganizationRepository:
                         sin(radians(:lat)) * sin(radians({table_name}.latitude))
                     ) <= :radius
                 """
-                )
+                ),
             )
             .params(lat=lat, lon=lon, radius=radius_km)
             .options(*self.COMMON_OPTIONS)
@@ -76,6 +86,8 @@ class OrganizationRepository:
             .where(
                 BuildingModel.latitude.between(lat_min, lat_max),
                 BuildingModel.longitude.between(lon_min, lon_max),
+                OrganizationModel.is_active == True,
+                BuildingModel.is_active == True,
             )
             .options(*self.COMMON_OPTIONS)
         )
@@ -85,7 +97,10 @@ class OrganizationRepository:
     async def get_by_id(self, organization_id: int) -> OrganizationModel | None:
         result = await self.db.scalars(
             select(OrganizationModel)
-            .where(OrganizationModel.id == organization_id)
+            .where(
+                OrganizationModel.id == organization_id,
+                OrganizationModel.is_active == True,
+            )
             .options(*self.COMMON_OPTIONS)
         )
         organization = result.first()
@@ -93,7 +108,9 @@ class OrganizationRepository:
 
     async def get_by_name(self, name: str) -> OrganizationModel | None:
         result = await self.db.scalars(
-            select(OrganizationModel).where(OrganizationModel.name == name).options(*self.COMMON_OPTIONS)
+            select(OrganizationModel)
+            .where(OrganizationModel.name == name, OrganizationModel.is_active == True)
+            .options(*self.COMMON_OPTIONS)
         )
         organization = result.first()
         return organization
@@ -106,7 +123,7 @@ class OrganizationRepository:
 
         cte = (
             select(ActivityModel)
-            .where(ActivityModel.id == activity.id)
+            .where(ActivityModel.id == activity.id, ActivityModel.is_active == True)
             .cte(name="activity_tree", recursive=True)
         )
         children = select(ActivityModel).join(cte, ActivityModel.parent_id == cte.c.id)
@@ -121,7 +138,10 @@ class OrganizationRepository:
                 organization_activities,
                 OrganizationModel.id == organization_activities.c.organization_id,
             )
-            .where(organization_activities.c.activity_id.in_(activity_ids))
+            .where(
+                organization_activities.c.activity_id.in_(activity_ids),
+                OrganizationModel.is_active == True,
+            )
             .options(*self.COMMON_OPTIONS)
         )
 
@@ -134,7 +154,9 @@ class OrganizationRepository:
         await self.db.refresh(organization_db)
         return organization_db
 
-    async def update(self, organization_id: int, organization_update: OrganizationCreate) -> BuildingModel:
+    async def update(
+        self, organization_id: int, organization_update: OrganizationCreate
+    ) -> OrganizationModel:
         result = await self.db.execute(
             update(OrganizationModel)
             .where(OrganizationModel.id == organization_id)
@@ -146,7 +168,7 @@ class OrganizationRepository:
         return None
 
     async def delete(self, organization_id: int) -> bool:
-        result = self.db.execute(
+        result = await self.db.execute(
             update(OrganizationModel).where(OrganizationModel.id == organization_id).values(is_active=False)
         )
         await self.db.commit()
