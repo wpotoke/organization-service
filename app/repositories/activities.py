@@ -7,7 +7,7 @@ from app.models import (
 from app.schemas import ActivityCreate
 
 
-class BuildingRepository:
+class ActivityRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
