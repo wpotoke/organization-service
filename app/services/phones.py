@@ -9,7 +9,7 @@ class PhoneService:
         self.phone_repo = phone_repo
         self.organization_repo = organization_repo
 
-    async def get_all_activities(self) -> list[PhoneModel]:
+    async def get_all_phones(self) -> list[PhoneModel]:
         return await self.phone_repo.get_all()
 
     async def get_phone(self, phone_id: int) -> PhoneModel | None:
