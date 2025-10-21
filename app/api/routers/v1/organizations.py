@@ -1,7 +1,7 @@
-# ruff:noqa:UP045
+# ruff:noqa:UP045,B008
 from typing import Annotated, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Path, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from pydantic import Field
 
 from app.core import BusinessException, NotFoundException
@@ -14,6 +14,35 @@ from app.schemas import (
 )
 
 router = APIRouter(prefix="/organization", tags=["organization"])
+
+
+@router.get("/radius", response_model=list[Organization])
+async def get_organizations_by_radius(
+    lat: Annotated[float, Query(..., description="Latitude")],
+    lon: Annotated[float, Query(..., description="Longitude")],
+    radius_km: Annotated[float | int, Query(..., description="Radius in km")],
+    organization_service: OrganizationService = Depends(get_organization_service),
+) -> list[Organization]:
+    try:
+        coordinates = CoordinateRadius(lat=lat, lon=lon, radius_km=radius_km)
+        return await organization_service.get_organization_by_radius(coordinates)
+    except NotFoundException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail) from e
+
+
+@router.get("/area/", response_model=list[Organization])
+async def get_organizations_by_rectangle(
+    lat_min: Annotated[float, Query(..., description="Min latitude")],
+    lat_max: Annotated[float, Query(..., description="Max latitude")],
+    lon_min: Annotated[float, Query(..., description="Min longitude")],
+    lon_max: Annotated[float, Query(..., description="Max longitude")],
+    organization_service: OrganizationService = Depends(get_organization_service),
+) -> list[Organization]:
+    try:
+        coordinates = CoordinateRectangle(lat_min=lat_min, lat_max=lat_max, lon_min=lon_min, lon_max=lon_max)
+        return await organization_service.get_organization_by_rectangle(coordinates)
+    except NotFoundException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail) from e
 
 
 @router.get("/", response_model=list[Organization], status_code=status.HTTP_200_OK)
@@ -69,49 +98,16 @@ async def get_organizations_by_activity(
 
 
 @router.get(
-    "/activities/{activity_name}",
+    "/activity/{activity_name}",
     response_model=list[Organization],
     status_code=status.HTTP_200_OK,
 )
 async def get_organizations_by_activity_with_children(
-    activity_name: Annotated[int, Path(ge=1)],
+    activity_name: str,
     organization_service: Annotated[OrganizationService, Depends(get_organization_service)],
 ) -> list[Organization]:
     try:
         return await organization_service.get_organizations_by_name_activity_with_children(activity_name)
-    except NotFoundException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail) from e
-
-
-@router.get(
-    "/radius",
-    response_model=list[Organization],
-    status_code=status.HTTP_200_OK,
-)
-async def get_organizations_by_radius(
-    coordinates: Annotated[CoordinateRadius, Field(description="Latitude, longitude and radius in km ")],
-    organization_service: Annotated[OrganizationService, Depends(get_organization_service)],
-) -> list[Organization]:
-    try:
-        return await organization_service.get_organization_by_radius(coordinates)
-    except NotFoundException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail) from e
-
-
-@router.get(
-    "/area/",
-    response_model=list[Organization],
-    status_code=status.HTTP_200_OK,
-)
-async def get_organizations_by_rectangle(
-    coordinates: Annotated[
-        CoordinateRectangle,
-        Field(description="Latitude (min, max), longitude (min, max)"),
-    ],
-    organization_service: Annotated[OrganizationService, Depends(get_organization_service)],
-) -> list[Organization]:
-    try:
-        return await organization_service.get_organization_by_rectangle(coordinates)
     except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail) from e
 
@@ -143,11 +139,11 @@ async def update_organization(
         raise HTTPException(status_code=e.status_code, detail=e.detail) from e
 
 
-@router.delete("/{organization_id}", status_code=status.HTTP_200_OK)
+@router.delete("/{organization_id}")
 async def delete_organization(
     organization_id: Annotated[int, Path(ge=1)],
     organization_service: Annotated[OrganizationService, Depends(get_organization_service)],
-) -> Organization | None:
+) -> dict:
     try:
         res = await organization_service.delete_organization(organization_id)
     except NotFoundException as e:

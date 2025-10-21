@@ -56,7 +56,7 @@ async def update_building(
 async def delete_building(
     building_id: Annotated[int, Path(ge=1)],
     building_service: Annotated[BuildingService, Depends(get_building_service)],
-) -> Building | None:
+) -> dict:
     try:
         res = await building_service.delete_building(building_id)
     except NotFoundException as e:

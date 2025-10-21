@@ -37,7 +37,7 @@ async def create_activity(
         raise HTTPException(status_code=e.status_code, detail=e.detail) from e
 
 
-@router.put("/{phone_id}", response_model=Optional[Acivity], status_code=status.HTTP_200_OK)
+@router.put("/{activity_id}", response_model=Optional[Acivity], status_code=status.HTTP_200_OK)
 async def update_activity(
     activity_id: Annotated[int, Path(ge=1)],
     activity_update: Annotated[ActivityCreate, Field(description="Activity update data")],
@@ -49,11 +49,11 @@ async def update_activity(
         raise HTTPException(status_code=e.status_code, detail=e.detail) from e
 
 
-@router.delete("/{phone_id}", status_code=status.HTTP_200_OK)
+@router.delete("/{activity_id}", status_code=status.HTTP_200_OK)
 async def delete_activity(
     activity_id: Annotated[int, Path(ge=1)],
     activity_service: Annotated[ActivityService, Depends(get_activity_service)],
-) -> Acivity | None:
+) -> dict:
     try:
         res = await activity_service.delete_activity(activity_id)
     except NotFoundException as e:

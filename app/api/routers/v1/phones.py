@@ -56,7 +56,7 @@ async def update_phone(
 async def delete_phone(
     phone_id: Annotated[int, Path(ge=1)],
     phone_service: Annotated[PhoneService, Depends(get_phone_service)],
-) -> Phone | None:
+) -> dict:
     try:
         res = await phone_service.delete_phone(phone_id)
     except NotFoundException as e:
