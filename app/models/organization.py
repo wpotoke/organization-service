@@ -10,7 +10,7 @@ class Organization(Base):
     __tablename__ = "organizations"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(155), nullable=False)
+    name: Mapped[str] = mapped_column(String(155), nullable=False, unique=True)
     phones: Mapped[list["Phone"]] = relationship("Phone", back_populates="organization")
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     building_id: Mapped[int] = mapped_column(Integer, ForeignKey("buildings.id"), nullable=False)

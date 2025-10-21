@@ -12,7 +12,7 @@ class Activity(Base):
     __tablename__ = "activities"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(155), nullable=False, unique=True)
+    name: Mapped[str] = mapped_column(String(155), nullable=False)
     level: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     parent_id: Mapped[int | None] = mapped_column(ForeignKey("activities.id"), nullable=True)
