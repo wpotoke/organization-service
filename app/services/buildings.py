@@ -14,7 +14,7 @@ class BuildingService:
     async def get_building(self, building_id: int) -> BuildingModel | None:
         building = await self.building_repo.get_by_id(building_id)
         if not building:
-            raise NotFoundException(f"Building with id {building_id} not found")
+            raise NotFoundException(detail=f"Building with id {building_id} not found")
         return building
 
     async def create_building(self, building_create: BuildingCreate) -> BuildingModel:
@@ -23,7 +23,7 @@ class BuildingService:
     async def update_building(self, building_id: int, building_update: BuildingCreate) -> BuildingModel:
         building = await self.building_repo.get_by_id(building_id)
         if not building:
-            raise NotFoundException(f"building with id {building_id} not found")
+            raise NotFoundException(detail=f"building with id {building_id} not found")
         building_db = await self.building_repo.update(building_id, building_update)
         if not building_db:
             raise BusinessException(detail=f"Failed to update building with id {building_id}")
@@ -33,5 +33,5 @@ class BuildingService:
     async def delete_building(self, building_id: int) -> bool:
         building = await self.building_repo.get_by_id(building_id)
         if not building:
-            raise NotFoundException(f"building with id {building_id} not found")
+            raise NotFoundException(detail=f"building with id {building_id} not found")
         return await self.building_repo.delete(building_id)

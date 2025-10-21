@@ -14,7 +14,7 @@ class ActivityService:
     async def get_activity(self, activity_id: int) -> ActivityModel | None:
         activity = await self.activity_repo.get_by_id(activity_id)
         if not activity:
-            raise NotFoundException(f"Activity with id {activity_id} not found")
+            raise NotFoundException(detail=f"Activity with id {activity_id} not found")
         return activity
 
     async def create_activity(self, activity_create: ActivityCreate) -> ActivityModel:
@@ -38,6 +38,8 @@ class ActivityService:
                     status_code=401,
                     detail=f"Activity with {activity_update.parent_id} not found",
                 )
+        else:
+            activity_update.parent_id = None
         activity_db = await self.activity_repo.update(activity_id, activity_update)
         if not activity_db:
             raise BusinessException(detail=f"Failed to update activity with id {activity_id}")

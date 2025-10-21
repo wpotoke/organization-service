@@ -15,7 +15,7 @@ class PhoneService:
     async def get_phone(self, phone_id: int) -> PhoneModel | None:
         phone = await self.phone_repo.get_by_id(phone_id)
         if not phone:
-            raise NotFoundException(f"phone with id {phone_id} not found")
+            raise NotFoundException(detail=f"phone with id {phone_id} not found")
         return phone
 
     async def create_phone(self, phone_create: PhoneCreate) -> PhoneModel:
@@ -31,12 +31,11 @@ class PhoneService:
     async def update_phone(self, phone_id: int, phone_update: PhoneCreate) -> PhoneModel:
         phone = await self.phone_repo.get_by_id(phone_id)
         if not phone:
-            raise NotFoundException(f"phone with id {phone_id} not found")
+            raise NotFoundException(detail=f"phone with id {phone_id} not found")
         if phone_update.organization_id:
-            organization = self.organization_repo.get_by_id(phone_update.organization_id)
+            organization = await self.organization_repo.get_by_id(phone_update.organization_id)
             if not organization:
                 raise NotFoundException(
-                    status_code=401,
                     detail=f"Organization with {phone_update.organization_id} not found",
                 )
         phone_db = await self.phone_repo.update(phone_id, phone_update)
@@ -48,5 +47,5 @@ class PhoneService:
     async def delete_phone(self, phone_id: int) -> bool:
         phone = await self.phone_repo.get_by_id(phone_id)
         if not phone:
-            raise NotFoundException(f"phone with id {phone_id} not found")
+            raise NotFoundException(detail=f"phone with id {phone_id} not found")
         return await self.phone_repo.delete(phone_id)
