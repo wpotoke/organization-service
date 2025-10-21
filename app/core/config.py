@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     POSTGRES_USER_NAME: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB_URL: str
+    API_KEY: str
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
