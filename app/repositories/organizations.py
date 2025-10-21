@@ -1,19 +1,27 @@
 # ruff:noqa:E712
 from sqlalchemy import select, text, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload, selectinload
+from sqlalchemy.orm import selectinload
 
-from app.models import Activity as ActivityModel
-from app.models import Building as BuildingModel
-from app.models import Organization as OrganizationModel
-from app.models import organization_activities
+from app.models import (
+    Activity as ActivityModel,
+)
+from app.models import (
+    Building as BuildingModel,
+)
+from app.models import (
+    Organization as OrganizationModel,
+)
+from app.models import (
+    organization_activities,
+)
 from app.schemas import OrganizationCreate
 
 
 class OrganizationRepository:
     COMMON_OPTIONS = [
         selectinload(OrganizationModel.activities),
-        joinedload(OrganizationModel.building),
+        selectinload(OrganizationModel.building),
         selectinload(OrganizationModel.phones),
     ]
 
@@ -57,7 +65,7 @@ class OrganizationRepository:
         organizations = result.all()
         return organizations
 
-    async def get_by_radius(self, lat: float, lon: float, radius_km: float) -> list[OrganizationModel]:
+    async def get_by_radius(self, lat: float, lon: float, radius_km: float | int) -> list[OrganizationModel]:
         table_name = BuildingModel.__tablename__  # "buildings"
         result = await self.db.scalars(
             select(OrganizationModel)
@@ -122,8 +130,7 @@ class OrganizationRepository:
         organization = result.first()
         return organization
 
-    async def get_by_name_activity_with_children(self, name: str) -> list[OrganizationModel]:
-        activity = self.get_by_name(name)
+    async def get_by_name_activity_with_children(self, activity: ActivityModel) -> list[OrganizationModel]:
         cte = (
             select(ActivityModel)
             .where(ActivityModel.id == activity.id, ActivityModel.is_active == True)
@@ -151,11 +158,22 @@ class OrganizationRepository:
         return organizations.all()
 
     async def create(self, organization_create: OrganizationCreate):
-        organization_db = OrganizationModel(**organization_create.model_dump())
+        organization_db = OrganizationModel(
+            name=organization_create.name, building_id=organization_create.building_id
+        )
         self.db.add(organization_db)
         await self.db.commit()
         await self.db.refresh(organization_db)
-        return organization_db
+
+        for activity_id in organization_create.activity_ids:
+            await self.db.execute(
+                organization_activities.insert().values(
+                    organization_id=organization_db.id,
+                    activity_id=activity_id,
+                )
+            )
+        await self.db.commit()
+        return await self.get_by_id(organization_db.id)
 
     async def update(
         self, organization_id: int, organization_update: OrganizationCreate
@@ -163,9 +181,29 @@ class OrganizationRepository:
         result = await self.db.execute(
             update(OrganizationModel)
             .where(OrganizationModel.id == organization_id)
-            .values(**organization_update.model_dump())
+            .values(
+                name=organization_update.name,
+                building_id=organization_update.building_id,
+            )
         )
         await self.db.commit()
+
+        await self.db.execute(
+            organization_activities.delete().where(
+                organization_activities.c.organization_id == organization_id
+            )
+        )
+
+        for activity_id in organization_update.activity_ids:
+            await self.db.execute(
+                organization_activities.insert().values(
+                    organization_id=organization_id,
+                    activity_id=activity_id,
+                )
+            )
+
+        await self.db.commit()
+
         if result.rowcount > 0:
             return await self.get_by_id(organization_id)
         return None
