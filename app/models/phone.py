@@ -10,6 +10,6 @@ class Phone(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     phone_number: Mapped[str] = mapped_column(String(16), unique=True, nullable=False)
-    organization_id: Mapped[int] = mapped_column(ForeignKey("organizations.id"), nullable=False)
+    organization_id: Mapped[int] = mapped_column(ForeignKey("organizations.id"), nullable=True)
     organization: Mapped["Organization"] = relationship("Organization", back_populates="phones")
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
