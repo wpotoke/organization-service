@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 
 from app.api.routers import (
     activity_router,
@@ -6,8 +6,9 @@ from app.api.routers import (
     orginazation_router,
     phone_router,
 )
+from app.core.dependencies.auth import verify_apikey
 
-app = FastAPI(title="Organization app - API", version="0.1.0")
+app = FastAPI(title="Organization app - API", version="0.1.0", dependencies=[Depends(verify_apikey)])
 
 app.include_router(building_router)
 app.include_router(phone_router)
