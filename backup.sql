@@ -16,12 +16,40 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+ALTER TABLE IF EXISTS ONLY public.phones DROP CONSTRAINT IF EXISTS phones_organization_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.organizations DROP CONSTRAINT IF EXISTS organizations_building_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.organization_activities DROP CONSTRAINT IF EXISTS organization_activities_organization_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.organization_activities DROP CONSTRAINT IF EXISTS organization_activities_activity_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.activities DROP CONSTRAINT IF EXISTS activities_parent_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.phones DROP CONSTRAINT IF EXISTS phones_pkey;
+ALTER TABLE IF EXISTS ONLY public.phones DROP CONSTRAINT IF EXISTS phones_phone_number_key;
+ALTER TABLE IF EXISTS ONLY public.organizations DROP CONSTRAINT IF EXISTS organizations_pkey;
+ALTER TABLE IF EXISTS ONLY public.organizations DROP CONSTRAINT IF EXISTS organizations_name_key;
+ALTER TABLE IF EXISTS ONLY public.organization_activities DROP CONSTRAINT IF EXISTS organization_activities_pkey;
+ALTER TABLE IF EXISTS ONLY public.buildings DROP CONSTRAINT IF EXISTS buildings_pkey;
+ALTER TABLE IF EXISTS ONLY public.buildings DROP CONSTRAINT IF EXISTS buildings_address_key;
+ALTER TABLE IF EXISTS ONLY public.alembic_version DROP CONSTRAINT IF EXISTS alembic_version_pkc;
+ALTER TABLE IF EXISTS ONLY public.activities DROP CONSTRAINT IF EXISTS activities_pkey;
+ALTER TABLE IF EXISTS public.phones ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.organizations ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.buildings ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.activities ALTER COLUMN id DROP DEFAULT;
+DROP SEQUENCE IF EXISTS public.phones_id_seq;
+DROP TABLE IF EXISTS public.phones;
+DROP SEQUENCE IF EXISTS public.organizations_id_seq;
+DROP TABLE IF EXISTS public.organizations;
+DROP TABLE IF EXISTS public.organization_activities;
+DROP SEQUENCE IF EXISTS public.buildings_id_seq;
+DROP TABLE IF EXISTS public.buildings;
+DROP TABLE IF EXISTS public.alembic_version;
+DROP SEQUENCE IF EXISTS public.activities_id_seq;
+DROP TABLE IF EXISTS public.activities;
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- Name: activities; Type: TABLE; Schema: public; Owner: organization_user
+-- Name: activities; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.activities (
@@ -33,10 +61,8 @@ CREATE TABLE public.activities (
 );
 
 
-ALTER TABLE public.activities OWNER TO organization_user;
-
 --
--- Name: activities_id_seq; Type: SEQUENCE; Schema: public; Owner: organization_user
+-- Name: activities_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.activities_id_seq
@@ -48,17 +74,15 @@ CREATE SEQUENCE public.activities_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.activities_id_seq OWNER TO organization_user;
-
 --
--- Name: activities_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: organization_user
+-- Name: activities_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.activities_id_seq OWNED BY public.activities.id;
 
 
 --
--- Name: alembic_version; Type: TABLE; Schema: public; Owner: organization_user
+-- Name: alembic_version; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.alembic_version (
@@ -66,10 +90,8 @@ CREATE TABLE public.alembic_version (
 );
 
 
-ALTER TABLE public.alembic_version OWNER TO organization_user;
-
 --
--- Name: buildings; Type: TABLE; Schema: public; Owner: organization_user
+-- Name: buildings; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.buildings (
@@ -81,10 +103,8 @@ CREATE TABLE public.buildings (
 );
 
 
-ALTER TABLE public.buildings OWNER TO organization_user;
-
 --
--- Name: buildings_id_seq; Type: SEQUENCE; Schema: public; Owner: organization_user
+-- Name: buildings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.buildings_id_seq
@@ -96,17 +116,15 @@ CREATE SEQUENCE public.buildings_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.buildings_id_seq OWNER TO organization_user;
-
 --
--- Name: buildings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: organization_user
+-- Name: buildings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.buildings_id_seq OWNED BY public.buildings.id;
 
 
 --
--- Name: organization_activities; Type: TABLE; Schema: public; Owner: organization_user
+-- Name: organization_activities; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.organization_activities (
@@ -115,10 +133,8 @@ CREATE TABLE public.organization_activities (
 );
 
 
-ALTER TABLE public.organization_activities OWNER TO organization_user;
-
 --
--- Name: organizations; Type: TABLE; Schema: public; Owner: organization_user
+-- Name: organizations; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.organizations (
@@ -129,10 +145,8 @@ CREATE TABLE public.organizations (
 );
 
 
-ALTER TABLE public.organizations OWNER TO organization_user;
-
 --
--- Name: organizations_id_seq; Type: SEQUENCE; Schema: public; Owner: organization_user
+-- Name: organizations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.organizations_id_seq
@@ -144,17 +158,15 @@ CREATE SEQUENCE public.organizations_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.organizations_id_seq OWNER TO organization_user;
-
 --
--- Name: organizations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: organization_user
+-- Name: organizations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.organizations_id_seq OWNED BY public.organizations.id;
 
 
 --
--- Name: phones; Type: TABLE; Schema: public; Owner: organization_user
+-- Name: phones; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.phones (
@@ -165,10 +177,8 @@ CREATE TABLE public.phones (
 );
 
 
-ALTER TABLE public.phones OWNER TO organization_user;
-
 --
--- Name: phones_id_seq; Type: SEQUENCE; Schema: public; Owner: organization_user
+-- Name: phones_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.phones_id_seq
@@ -180,45 +190,43 @@ CREATE SEQUENCE public.phones_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.phones_id_seq OWNER TO organization_user;
-
 --
--- Name: phones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: organization_user
+-- Name: phones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.phones_id_seq OWNED BY public.phones.id;
 
 
 --
--- Name: activities id; Type: DEFAULT; Schema: public; Owner: organization_user
+-- Name: activities id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.activities ALTER COLUMN id SET DEFAULT nextval('public.activities_id_seq'::regclass);
 
 
 --
--- Name: buildings id; Type: DEFAULT; Schema: public; Owner: organization_user
+-- Name: buildings id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.buildings ALTER COLUMN id SET DEFAULT nextval('public.buildings_id_seq'::regclass);
 
 
 --
--- Name: organizations id; Type: DEFAULT; Schema: public; Owner: organization_user
+-- Name: organizations id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organizations ALTER COLUMN id SET DEFAULT nextval('public.organizations_id_seq'::regclass);
 
 
 --
--- Name: phones id; Type: DEFAULT; Schema: public; Owner: organization_user
+-- Name: phones id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.phones ALTER COLUMN id SET DEFAULT nextval('public.phones_id_seq'::regclass);
 
 
 --
--- Data for Name: activities; Type: TABLE DATA; Schema: public; Owner: organization_user
+-- Data for Name: activities; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.activities (id, name, level, parent_id, is_active) FROM stdin;
@@ -238,7 +246,7 @@ COPY public.activities (id, name, level, parent_id, is_active) FROM stdin;
 
 
 --
--- Data for Name: alembic_version; Type: TABLE DATA; Schema: public; Owner: organization_user
+-- Data for Name: alembic_version; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.alembic_version (version_num) FROM stdin;
@@ -247,7 +255,7 @@ COPY public.alembic_version (version_num) FROM stdin;
 
 
 --
--- Data for Name: buildings; Type: TABLE DATA; Schema: public; Owner: organization_user
+-- Data for Name: buildings; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.buildings (id, address, latitude, longitude, is_active) FROM stdin;
@@ -260,7 +268,7 @@ COPY public.buildings (id, address, latitude, longitude, is_active) FROM stdin;
 
 
 --
--- Data for Name: organization_activities; Type: TABLE DATA; Schema: public; Owner: organization_user
+-- Data for Name: organization_activities; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.organization_activities (organization_id, activity_id) FROM stdin;
@@ -283,7 +291,7 @@ COPY public.organization_activities (organization_id, activity_id) FROM stdin;
 
 
 --
--- Data for Name: organizations; Type: TABLE DATA; Schema: public; Owner: organization_user
+-- Data for Name: organizations; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.organizations (id, name, building_id, is_active) FROM stdin;
@@ -304,7 +312,7 @@ COPY public.organizations (id, name, building_id, is_active) FROM stdin;
 
 
 --
--- Data for Name: phones; Type: TABLE DATA; Schema: public; Owner: organization_user
+-- Data for Name: phones; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.phones (id, phone_number, organization_id, is_active) FROM stdin;
@@ -335,35 +343,35 @@ COPY public.phones (id, phone_number, organization_id, is_active) FROM stdin;
 
 
 --
--- Name: activities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: organization_user
+-- Name: activities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.activities_id_seq', 12, true);
 
 
 --
--- Name: buildings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: organization_user
+-- Name: buildings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.buildings_id_seq', 5, true);
 
 
 --
--- Name: organizations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: organization_user
+-- Name: organizations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.organizations_id_seq', 14, true);
 
 
 --
--- Name: phones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: organization_user
+-- Name: phones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.phones_id_seq', 24, true);
 
 
 --
--- Name: activities activities_pkey; Type: CONSTRAINT; Schema: public; Owner: organization_user
+-- Name: activities activities_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.activities
@@ -371,7 +379,7 @@ ALTER TABLE ONLY public.activities
 
 
 --
--- Name: alembic_version alembic_version_pkc; Type: CONSTRAINT; Schema: public; Owner: organization_user
+-- Name: alembic_version alembic_version_pkc; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.alembic_version
@@ -379,7 +387,7 @@ ALTER TABLE ONLY public.alembic_version
 
 
 --
--- Name: buildings buildings_address_key; Type: CONSTRAINT; Schema: public; Owner: organization_user
+-- Name: buildings buildings_address_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.buildings
@@ -387,7 +395,7 @@ ALTER TABLE ONLY public.buildings
 
 
 --
--- Name: buildings buildings_pkey; Type: CONSTRAINT; Schema: public; Owner: organization_user
+-- Name: buildings buildings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.buildings
@@ -395,7 +403,7 @@ ALTER TABLE ONLY public.buildings
 
 
 --
--- Name: organization_activities organization_activities_pkey; Type: CONSTRAINT; Schema: public; Owner: organization_user
+-- Name: organization_activities organization_activities_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organization_activities
@@ -403,7 +411,7 @@ ALTER TABLE ONLY public.organization_activities
 
 
 --
--- Name: organizations organizations_name_key; Type: CONSTRAINT; Schema: public; Owner: organization_user
+-- Name: organizations organizations_name_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organizations
@@ -411,7 +419,7 @@ ALTER TABLE ONLY public.organizations
 
 
 --
--- Name: organizations organizations_pkey; Type: CONSTRAINT; Schema: public; Owner: organization_user
+-- Name: organizations organizations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organizations
@@ -419,7 +427,7 @@ ALTER TABLE ONLY public.organizations
 
 
 --
--- Name: phones phones_phone_number_key; Type: CONSTRAINT; Schema: public; Owner: organization_user
+-- Name: phones phones_phone_number_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.phones
@@ -427,7 +435,7 @@ ALTER TABLE ONLY public.phones
 
 
 --
--- Name: phones phones_pkey; Type: CONSTRAINT; Schema: public; Owner: organization_user
+-- Name: phones phones_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.phones
@@ -435,7 +443,7 @@ ALTER TABLE ONLY public.phones
 
 
 --
--- Name: activities activities_parent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: organization_user
+-- Name: activities activities_parent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.activities
@@ -443,7 +451,7 @@ ALTER TABLE ONLY public.activities
 
 
 --
--- Name: organization_activities organization_activities_activity_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: organization_user
+-- Name: organization_activities organization_activities_activity_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organization_activities
@@ -451,7 +459,7 @@ ALTER TABLE ONLY public.organization_activities
 
 
 --
--- Name: organization_activities organization_activities_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: organization_user
+-- Name: organization_activities organization_activities_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organization_activities
@@ -459,7 +467,7 @@ ALTER TABLE ONLY public.organization_activities
 
 
 --
--- Name: organizations organizations_building_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: organization_user
+-- Name: organizations organizations_building_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organizations
@@ -467,7 +475,7 @@ ALTER TABLE ONLY public.organizations
 
 
 --
--- Name: phones phones_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: organization_user
+-- Name: phones phones_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.phones
