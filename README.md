@@ -19,6 +19,8 @@ copy .env.example .env
 POSTGRES_DB_NAME="your_db_name"
 POSTGRES_USER_NAME="your_username"
 POSTGRES_PASSWORD="your_password"
+# Вставьте значения в url для db
+POSTGRES_DB_URL="postgresql+asyncpg://{username}:{pass}@db:5432/{dbname}"
 
 # Запускаем контейнеры
 docker compose up -d
@@ -28,4 +30,4 @@ docker compose exec organization_service alembic upgrade head
 ```
 
 ### API будет доступно по адресу:
-http://localhost:8001/docs
+http://127.0.0.1:8001/docs
