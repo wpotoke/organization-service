@@ -24,10 +24,8 @@ POSTGRES_DB_URL="postgresql+asyncpg://{username}:{pass}@db:5432/{dbname}"
 
 # Запускаем контейнеры
 docker compose up -d
-
-# Применяем миграции
-docker compose exec organization_service alembic upgrade head
 ```
+alembic таблицы уже лежат в бэкапе
 
 ### API будет доступно по адресу:
 http://127.0.0.1:8001/docs
