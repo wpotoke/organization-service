@@ -25,7 +25,9 @@ POSTGRES_DB_URL="postgresql+asyncpg://{username}:{pass}@db:5432/{dbname}"
 # Запускаем контейнеры
 docker compose up -d
 ```
-api-key=6Pqiz41hDB8n3WY1CfSR7kYh3Te1BD0V5ROeowsQLLawUMyibL46Lgw5lMhxSoGQlSuSwnHTjR5dX3oWUyTzXcfqf1d0G5VOHBw6Oa30ke1aoSQxUywvf0eDYEhh8
+apikey=6Pqiz41hDB8n3WY1CfSR7kYh3Te1BD0V5ROeowsQLLawUMyibL46Lgw5lMhxSoGQlSuSwnHTjR5dX3oWUyTzXcfqf1d0G5VOHBw6Oa30ke1aoSQxUywvf0eDYEhh8
+
+
 alembic таблицы уже лежат в бэкапе
 
 ### API будет доступно по адресу:
