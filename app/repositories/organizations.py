@@ -136,25 +136,21 @@ class OrganizationRepository:
             .where(ActivityModel.id == activity.id, ActivityModel.is_active == True)
             .cte(name="activity_tree", recursive=True)
         )
-        children = select(ActivityModel).join(cte, ActivityModel.parent_id == cte.c.id)
-        cte = cte.union_all(children)
-        query = select(cte.c.id)
-        result_activity_ids = await self.db.execute(query)
-        activity_ids = [row[0] for row in result_activity_ids.fetchall()]
-
-        organizations = await self.db.scalars(
-            select(OrganizationModel)
-            .join(
-                organization_activities,
-                OrganizationModel.id == organization_activities.c.organization_id,
-            )
-            .where(
-                organization_activities.c.activity_id.in_(activity_ids),
-                OrganizationModel.is_active == True,
-            )
-            .options(*self.COMMON_OPTIONS)
+        children = (
+            select(ActivityModel)
+            .join(cte, ActivityModel.parent_id == cte.c.id)
+            .where(ActivityModel.is_active == True)
         )
-
+        cte = cte.union_all(children)
+        stmt = (
+            select(OrganizationModel)
+            .join(organization_activities, OrganizationModel.id == organization_activities.c.organization_id)
+            .join(cte, cte.c.id == organization_activities.c.activity_id)
+            .where(OrganizationModel.is_active == True)
+            .options(*self.COMMON_OPTIONS)
+            .distinct(OrganizationModel.id)
+        )
+        organizations = await self.db.scalars(stmt)
         return organizations.all()
 
     async def create(self, organization_create: OrganizationCreate):
